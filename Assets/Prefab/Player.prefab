@@ -222,7 +222,7 @@ GameObject:
   - component: {fileID: 8388568928935280076}
   - component: {fileID: 8388568928935280067}
   - component: {fileID: 8388568928935280066}
-  - component: {fileID: 8388568928935280064}
+  - component: {fileID: 9189377400231529133}
   m_Layer: 0
   m_Name: Player
   m_TagString: Player
@@ -346,8 +346,8 @@ MonoBehaviour:
   shotDelay: 0.3
   fxSource: {fileID: 7395345369056668042}
   fxShot: {fileID: 8300000, guid: f5edf65cebb195649a5dbdf673692e38, type: 3}
---- !u!61 &8388568928935280064
-BoxCollider2D:
+--- !u!58 &9189377400231529133
+CircleCollider2D:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -359,19 +359,9 @@ BoxCollider2D:
   m_IsTrigger: 1
   m_UsedByEffector: 0
   m_UsedByComposite: 0
-  m_Offset: {x: -0.049747527, y: 0.3233585}
-  m_SpriteTilingProperty:
-    border: {x: 0, y: 0, z: 0, w: 0}
-    pivot: {x: 0.5, y: 0.5}
-    oldSize: {x: 2.54, y: 2.71}
-    newSize: {x: 2.54, y: 2.71}
-    adaptiveTilingThreshold: 0.5
-    drawMode: 0
-    adaptiveTiling: 0
-  m_AutoTiling: 0
+  m_Offset: {x: 0.0069196224, y: 0.0074103773}
   serializedVersion: 2
-  m_Size: {x: 1.2341281, y: 0.75326604}
-  m_EdgeRadius: 0
+  m_Radius: 0.43525994
 --- !u!1 &8388568928956721540
 GameObject:
   m_ObjectHideFlags: 0
