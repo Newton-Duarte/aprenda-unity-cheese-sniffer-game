@@ -116,12 +116,29 @@ public class GameController : MonoBehaviour
         StartCoroutine(levelCountdown());
     }
 
+    public void gameOver()
+    {
+        Debug.LogError("Game Over!");
+        fxSource.PlayOneShot(fxGameOver);
+        currentState = gameState.gameover;
+        StartCoroutine(loadSceneWithDelay(3, 1.5f));
+    }
+
     public void setScore(int points)
     {
         score += points;
         scoreText.text = score.ToString();
         fxSource.PlayOneShot(fxCollect);
     }
+
+    internal void gameWin()
+    {
+        Debug.Log("Game Win!");
+        fxSource.PlayOneShot(fxGameWin);
+        currentState = gameState.gamewin;
+        StartCoroutine(loadSceneWithDelay(2, 2.5f));
+    }
+
     internal IEnumerator loadSceneWithDelay(int sceneIndex, float delay)
     {
         yield return new WaitForSeconds(delay);
