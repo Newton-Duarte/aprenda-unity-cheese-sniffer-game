@@ -4,6 +4,10 @@ using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
 
+internal enum gameState {
+    gameplay, gamewin, gameover
+}
+
 public class GameController : MonoBehaviour
 {
     public Text scoreText;
@@ -11,6 +15,8 @@ public class GameController : MonoBehaviour
     int score;
     int levelTime = 5;
 
+    [Header("Gameplay Config.")]
+    internal gameState currentState;
     [SerializeField] AudioSource fxSource;
     [SerializeField] AudioClip fxCollect;
 
