@@ -78,6 +78,7 @@ public class Player : MonoBehaviour
     void FixedUpdate()
     {
         isGrounded = Physics2D.OverlapCircle(groundCheck.position, 0.02f, whatIsGround);
+        playerRb.velocity = new Vector2(speedX * moveSpeed, speedY);
     }
 
     void LateUpdate()
