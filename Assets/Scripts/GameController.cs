@@ -24,8 +24,16 @@ public class GameController : MonoBehaviour
     [Header("UI Config.")]
     [SerializeField] Text scoreText;
     [SerializeField] Text timeText;
+
+    [Header("Audio Config.")]
+    [SerializeField] AudioSource fxMusic;
     [SerializeField] AudioSource fxSource;
+    [SerializeField] AudioSource fxAlertSource;
     [SerializeField] AudioClip fxCollect;
+    [SerializeField] AudioClip fxGameWin;
+    [SerializeField] AudioClip fxGameOver;
+    [SerializeField] AudioClip fxEnemy;
+
 
     // Start is called before the first frame update
     void Start()
