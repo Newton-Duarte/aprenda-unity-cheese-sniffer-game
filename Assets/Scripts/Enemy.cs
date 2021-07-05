@@ -1,60 +1,86 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
+using Random = UnityEngine.Random;
 using UnityEngine;
 
 public class Enemy : MonoBehaviour
 {
-    GameController _gameController;
-    Animator enemyAnim;
+    private GameController _gameController;
+    private Player _player;
 
-    [SerializeField] float moveSpeed;
-    [SerializeField] bool isLookLeft;
-    bool isCaughtTheMouse;
+    public GameObject explosionPrefab;
+    public GameObject[] loot;
+
+    public Transform weapon;
+    public GameObject bulletPrefab;
+    public float[] shotDelay;
 
     // Start is called before the first frame update
     void Start()
     {
         _gameController = FindObjectOfType(typeof(GameController)) as GameController;
-        enemyAnim = GetComponent<Animator>();
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        if (_gameController.currentState != gameState.gamewin)
-        {
-            transform.position = Vector3.MoveTowards(transform.position, _gameController.targetSpawn.position, moveSpeed * Time.deltaTime);
-
-            if (!isLookLeft && transform.position.x > _gameController.targetSpawn.position.x) { flip(); }
-        }
-    }
-
-    private void LateUpdate()
-    {
-        enemyAnim.SetBool("isCaughtTheMouse", isCaughtTheMouse);
-    }
+        _player = FindObjectOfType(typeof(Player)) as Player;
+        StartCoroutine("shot");
+     }
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
-        if (collision.CompareTag("Player"))
+        switch(collision.gameObject.tag)
         {
-            Destroy(collision.gameObject);
-            isCaughtTheMouse = true;
-            _gameController.gameOver();
+            case "playerShot":
+                Die(collision);
+                break;
         }
     }
 
-    void flip()
+    private void Die(Collider2D collision)
     {
-        isLookLeft = !isLookLeft;
-        float scaleX = transform.localScale.x;
-        scaleX *= -1;
-        transform.localScale = new Vector3(scaleX, transform.localScale.y, transform.localScale.z);
+        GameObject temp = Instantiate(explosionPrefab, transform.position, transform.rotation);
+        Destroy(gameObject);
+        Destroy(temp.gameObject, 0.5f);
+        Destroy(collision.gameObject);
+
+        spawnLoot();
     }
 
-    private void OnBecameInvisible()
+    IEnumerator shot()
     {
-        _gameController.setIsSpawned(false);
-        Destroy(gameObject);
+        yield return new WaitForSeconds(Random.Range(shotDelay[0], shotDelay[1]));
+
+        if (_gameController.isPlayerAlive)
+        {
+            weapon.right = _player.transform.position - transform.position;
+            GameObject temp = Instantiate(bulletPrefab, weapon.position, weapon.rotation);
+            temp.GetComponent<Rigidbody2D>().velocity = weapon.right * 8;
+
+        }
+        StartCoroutine("shot");
+    }
+
+    private void spawnLoot()
+    {
+        int idLoot;
+        int rand = Random.Range(0, 100);
+
+        if (rand < 50)
+        {
+            rand = Random.Range(0, 100);
+
+            if (rand > 85)
+            {
+                idLoot = 2;
+            }
+            else if (rand > 50)
+            {
+                idLoot = 1;
+            }
+            else
+            {
+                idLoot = 0;
+            }
+
+            Instantiate(loot[idLoot], transform.position, transform.rotation);
+        }
     }
 }

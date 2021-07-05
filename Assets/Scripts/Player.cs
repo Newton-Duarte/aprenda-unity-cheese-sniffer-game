@@ -5,120 +5,167 @@ using UnityEngine;
 
 public class Player : MonoBehaviour
 {
-    GameController _gameController;
-    SpriteRenderer playerSr;
-    Rigidbody2D playerRb;
-    Animator playerAnim;
+    private GameController _gameController;
+    private Rigidbody2D playerRb;
+    private SpriteRenderer playerSr;
+    public SpriteRenderer planeGasSr;
+    public GameObject planeShadow;
 
-    [SerializeField] float moveSpeed;
-    [SerializeField] float jumpForce;
-    [SerializeField] AudioSource fxSource;
-    [SerializeField] AudioClip fxJump;
-    bool isLookLeft;
-    bool isGrounded;
-    float speedX;
-    float speedY;
-    public LayerMask whatIsGround;
-    public Transform groundCheck;
+    [Header("Spawn Config.")]
+    public float invulnerabilityDelay;
+    public float blinkDelay;
+    public Color invulnerabilityColor;
+
+    [Header("Movement Config.")]
+    public float moveSpeed;
+
+    [Header("Shot Config.")]
+    public int idBullet;
+    public bulletsTag bulletTag;
+    public Transform weaponPos;
+    public float bulletSpeed;
+    public float shotDelay;
+    private int powerUpLevel;
+    private bool isFire;
+
+    [Header("FX Config.")]
+    public AudioSource fxSource;
+    public AudioClip fxShot;
+
+    private void Awake()
+    {
+        _gameController = FindObjectOfType(typeof(GameController)) as GameController;
+        _gameController._player = this;
+    }
 
     // Start is called before the first frame update
     void Start()
     {
-        _gameController = FindObjectOfType(typeof(GameController)) as GameController;
-        playerSr = GetComponent<SpriteRenderer>();
         playerRb = GetComponent<Rigidbody2D>();
-        playerAnim = GetComponent<Animator>();
+        playerSr = GetComponent<SpriteRenderer>();
     }
 
     // Update is called once per frame
     void Update()
     {
-        if (_gameController.currentState == gameState.gameplay)
+        if (_gameController.currentState == gameState.gameplay || _gameController.currentState == gameState.bossFight)
         {
-            speedX = Input.GetAxisRaw("Horizontal");
-            speedY = playerRb.velocity.y;
+            float horizontal = Input.GetAxisRaw("Horizontal");
+            float vertical = Input.GetAxisRaw("Vertical");
 
-            if (!isLookLeft && speedX < 0)
+            playerRb.velocity = new Vector2(horizontal * moveSpeed, vertical * moveSpeed);
+        
+            if (Input.GetButton("Fire1") && !isFire)
             {
-                flip();
-            }
-            else if (isLookLeft && speedX > 0)
-            {
-                flip();
-            }
-
-            if (transform.position.x < _gameController.leftPlayerBoundary.position.x)
-            {
-                transform.position = new Vector3(_gameController.leftPlayerBoundary.position.x, transform.position.y, transform.position.z);
-            }
-            else if (transform.position.x > _gameController.rightPlayerBoundary.position.x)
-            {
-                transform.position = new Vector3(_gameController.rightPlayerBoundary.position.x, transform.position.y, transform.position.z);
-            }
-
-            if (Input.GetButtonDown("Jump") && isGrounded)
-            {
-                jump();
-            }
-        }
-        else if (_gameController.currentState == gameState.gamewin)
-        {
-            playerRb.gravityScale = 0;
-            playerRb.velocity = new Vector2(0, 0);
-            isGrounded = true;
-            transform.position = Vector3.MoveTowards(transform.position, _gameController.ratHole.position, 2 * Time.deltaTime);
-
-            if (transform.position == _gameController.ratHole.position)
-            {
-                Destroy(gameObject);
+                shot();
             }
         }
     }
 
-    void FixedUpdate()
+    void shot()
     {
-        isGrounded = Physics2D.OverlapCircle(groundCheck.position, 0.02f, whatIsGround);
-        playerRb.velocity = new Vector2(speedX * moveSpeed, speedY);
+        isFire = true;
+
+        GameObject temp = Instantiate(_gameController.bulletsPrefab[idBullet]);
+        temp.transform.tag = _gameController.getBulletTag(bulletTag);
+        temp.transform.position = weaponPos.position;
+        temp.GetComponent<Rigidbody2D>().velocity = new Vector2(0, bulletSpeed);
+        fxSource.PlayOneShot(fxShot);
+        StartCoroutine("shotControl");
     }
 
-    void LateUpdate()
+    IEnumerator shotControl()
     {
-        updateAnimations();
-    }
-
-    private void flip()
-    {
-        isLookLeft = !isLookLeft;
-        playerSr.flipX = isLookLeft;
-    }
-
-    void updateAnimations()
-    {
-        playerAnim.SetInteger("speedX", (int)speedX);
-        playerAnim.SetFloat("speedY", speedY);
-        playerAnim.SetBool("isGrounded", isGrounded);
-    }
-
-    void jump()
-    {
-        playerRb.AddForce(new Vector2(playerRb.velocity.x, jumpForce));
-        fxSource.PlayOneShot(fxJump);
+        yield return new WaitForSeconds(shotDelay);
+        isFire = false;
     }
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
-        switch(collision.tag)
+        switch (collision.gameObject.tag)
         {
-            case "collectable":
-                Destroy(collision.gameObject);
-                _gameController.setScore(1);
-                break;
-            case "endGame":
-                _gameController.gameWin();
-                break;
+            case "enemyShot":
+                if (!_gameController.isPlayerAlive) { return; }
 
+                _gameController.hitPlayer();
+                Destroy(collision.gameObject);
+                powerUpLevel = 0;
+                break;
+            case "skyEnemy":
+                if (!_gameController.isPlayerAlive) { return; }
+
+                _gameController.hitPlayer();
+                powerUpLevel = 0;
+                break;
+            case "collectable":
+                collect(collision);
+                break;
+        }
+    }
+
+    private void collect(Collider2D collision)
+    {
+        IdCollectable idCollectable = collision.gameObject.GetComponent<IdCollectable>();
+
+        if (!idCollectable) { return; };
+
+        switch (idCollectable.objName)
+        {
+            case "extraLife":
+                _gameController.setExtraLives(1);
+                _gameController.playBonusFx();
+                break;
+            case "coin":
+                _gameController.setScore(idCollectable.points);
+                _gameController.playCollectFx();
+                break;
+            case "bomb":
+                powerUp();
+                Destroy(collision.gameObject);
+                _gameController.playCollectFx();
+                break;
             default:
                 break;
         }
+
+        Destroy(collision.gameObject);
+    }
+
+    private void powerUp()
+    {
+        if (powerUpLevel >= 2) { return; }
+
+        shotDelay -= 0.075f;
+        powerUpLevel++;
+
+        if (powerUpLevel == 2)
+        {
+            idBullet = 3;
+        }
+    }
+
+    IEnumerator invulnerability()
+    {
+        Collider2D col = GetComponent<Collider2D>();
+        col.enabled = false;
+        playerSr.color = invulnerabilityColor;
+        planeGasSr.color = invulnerabilityColor;
+        StartCoroutine("blinkPlayer");
+
+        yield return new WaitForSeconds(invulnerabilityDelay);
+        col.enabled = true;
+        playerSr.color = Color.white;
+        planeGasSr.color = Color.white;
+        playerSr.enabled = true;
+        planeGasSr.enabled = true;
+        StopCoroutine("blinkPlayer");
+    }
+
+    IEnumerator blinkPlayer()
+    {
+        yield return new WaitForSeconds(blinkDelay);
+        playerSr.enabled = !playerSr.enabled;
+        planeGasSr.enabled = !planeGasSr.enabled;
+        StartCoroutine("blinkPlayer");
     }
 }

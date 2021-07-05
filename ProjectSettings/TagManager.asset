@@ -5,8 +5,10 @@ TagManager:
   serializedVersion: 2
   tags:
   - collectable
+  - playerShot
+  - enemyShot
   - enemy
-  - endGame
+  - skyEnemy
   layers:
   - Default
   - TransparentFX
@@ -14,7 +16,7 @@ TagManager:
   - 
   - Water
   - UI
-  - Ground
+  - 
   - 
   - 
   - 
@@ -42,14 +44,14 @@ TagManager:
   - 
   m_SortingLayers:
   - name: Scenario
-    uniqueID: 1122948285
+    uniqueID: 714702451
     locked: 0
   - name: Default
     uniqueID: 0
     locked: 0
   - name: First
-    uniqueID: 529158287
+    uniqueID: 2556532477
     locked: 0
   - name: HUD
-    uniqueID: 3806963521
+    uniqueID: 2789238625
     locked: 0
