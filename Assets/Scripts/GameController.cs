@@ -52,7 +52,52 @@ public class GameController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        
+        if (!isSpawned && currentState == gameState.gameplay)
+        {
+            isSpawned = true;
+            StartCoroutine(spawnEnemy());
+        }
+    }
+
+    void LateUpdate()
+    {
+        if (levelTime == 30)
+        {
+            fxMusic.pitch = 1.3f;
+        }
+    }
+
+    public void setIsSpawned(bool value)
+    {
+        isSpawned = value;
+    }
+
+    IEnumerator spawnEnemy()
+    {
+        yield return new WaitForSeconds(Random.Range(enemySpawnTimes[0], enemySpawnTimes[1]));
+
+        int rand = Random.Range(0, 100);
+
+        if (rand < 50)
+        {
+            fxAlertSource.panStereo = -1;
+            fxAlertSource.PlayOneShot(fxEnemy);
+            yield return new WaitForSeconds(1f);
+
+            GameObject enemy = Instantiate(enemyPrefab);
+            enemy.transform.position = new Vector3(leftSpawn.position.x, enemy.transform.position.y, enemy.transform.position.z);
+            targetSpawn = rightSpawn;
+        }
+        else
+        {
+            fxAlertSource.panStereo = 1;
+            fxAlertSource.PlayOneShot(fxEnemy);
+            yield return new WaitForSeconds(1f);
+
+            GameObject enemy = Instantiate(enemyPrefab);
+            enemy.transform.position = new Vector3(rightSpawn.position.x, enemy.transform.position.y, enemy.transform.position.z);
+            targetSpawn = leftSpawn;
+        }
     }
 
     IEnumerator levelCountdown()
