@@ -63,7 +63,15 @@ public class Player : MonoBehaviour
         }
         else if (_gameController.currentState == gameState.gamewin)
         {
-            jump();
+            playerRb.gravityScale = 0;
+            playerRb.velocity = new Vector2(0, 0);
+            isGrounded = true;
+            transform.position = Vector3.MoveTowards(transform.position, _gameController.ratHole.position, 2 * Time.deltaTime);
+
+            if (transform.position == _gameController.ratHole.position)
+            {
+                Destroy(gameObject);
+            }
         }
     }
 
