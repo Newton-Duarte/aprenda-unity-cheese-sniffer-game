@@ -113,6 +113,9 @@ public class Player : MonoBehaviour
                 Destroy(collision.gameObject);
                 _gameController.setScore(1);
                 break;
+            case "endGame":
+                _gameController.gameWin();
+                break;
 
             default:
                 break;
