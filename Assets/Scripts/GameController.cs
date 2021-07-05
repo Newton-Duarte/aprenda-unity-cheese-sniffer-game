@@ -17,6 +17,10 @@ public class GameController : MonoBehaviour
     internal gameState currentState;
     [SerializeField] internal Transform ratHole;
 
+    [Header("Boundary Config.")]
+    [SerializeField] internal Transform leftPlayerBoundary;
+    [SerializeField] internal Transform rightPlayerBoundary;
+
     [Header("UI Config.")]
     [SerializeField] Text scoreText;
     [SerializeField] Text timeText;
