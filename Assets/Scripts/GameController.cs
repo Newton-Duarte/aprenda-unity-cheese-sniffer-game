@@ -108,8 +108,8 @@ public class GameController : MonoBehaviour
 
         if (levelTime == 0)
         {
-            StopCoroutine("levelCountdown");
-            print("Game Over!");
+            StopCoroutine(levelCountdown());
+            gameOver();
             yield break;
         }
 
