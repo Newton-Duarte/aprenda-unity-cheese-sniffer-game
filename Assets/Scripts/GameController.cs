@@ -15,6 +15,8 @@ public class GameController : MonoBehaviour
 
     [Header("Gameplay Config.")]
     internal gameState currentState;
+    [SerializeField] internal Transform ratHole;
+
     [Header("UI Config.")]
     [SerializeField] Text scoreText;
     [SerializeField] Text timeText;
