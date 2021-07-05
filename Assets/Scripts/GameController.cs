@@ -10,13 +10,14 @@ internal enum gameState {
 
 public class GameController : MonoBehaviour
 {
-    public Text scoreText;
-    public Text timeText;
     int score;
     int levelTime = 5;
 
     [Header("Gameplay Config.")]
     internal gameState currentState;
+    [Header("UI Config.")]
+    [SerializeField] Text scoreText;
+    [SerializeField] Text timeText;
     [SerializeField] AudioSource fxSource;
     [SerializeField] AudioClip fxCollect;
 
