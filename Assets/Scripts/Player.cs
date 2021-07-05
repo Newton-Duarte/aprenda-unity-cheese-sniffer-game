@@ -33,19 +33,19 @@ public class Player : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        speedX = Input.GetAxisRaw("Horizontal");
-        speedY = playerRb.velocity.y;
-
-        if (!isLookLeft && speedX < 0)
+        if (_gameController.currentState == gameState.gameplay)
         {
-            flip();
-        }
-        else if (isLookLeft && speedX > 0)
-        {
-            flip();
-        }
+            speedX = Input.GetAxisRaw("Horizontal");
+            speedY = playerRb.velocity.y;
 
-        playerRb.velocity = new Vector2(speedX * moveSpeed, speedY);
+            if (!isLookLeft && speedX < 0)
+            {
+                flip();
+            }
+            else if (isLookLeft && speedX > 0)
+            {
+                flip();
+            }
 
         if (Input.GetButtonDown("Jump") && isGrounded)
         {
