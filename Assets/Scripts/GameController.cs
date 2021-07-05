@@ -10,8 +10,8 @@ internal enum gameState {
 
 public class GameController : MonoBehaviour
 {
+    int levelTime = 90;
     int score;
-    int levelTime = 5;
 
     [Header("Gameplay Config.")]
     internal gameState currentState;
