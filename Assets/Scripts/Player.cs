@@ -47,7 +47,21 @@ public class Player : MonoBehaviour
                 flip();
             }
 
-        if (Input.GetButtonDown("Jump") && isGrounded)
+            if (transform.position.x < _gameController.leftPlayerBoundary.position.x)
+            {
+                transform.position = new Vector3(_gameController.leftPlayerBoundary.position.x, transform.position.y, transform.position.z);
+            }
+            else if (transform.position.x > _gameController.rightPlayerBoundary.position.x)
+            {
+                transform.position = new Vector3(_gameController.rightPlayerBoundary.position.x, transform.position.y, transform.position.z);
+            }
+
+            if (Input.GetButtonDown("Jump") && isGrounded)
+            {
+                jump();
+            }
+        }
+        else if (_gameController.currentState == gameState.gamewin)
         {
             jump();
         }
