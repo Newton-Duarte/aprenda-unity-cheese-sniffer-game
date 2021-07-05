@@ -34,6 +34,13 @@ public class GameController : MonoBehaviour
     [SerializeField] AudioClip fxGameOver;
     [SerializeField] AudioClip fxEnemy;
 
+    [Header("Enemy Config.")]
+    [SerializeField] GameObject enemyPrefab;
+    [SerializeField] Transform leftSpawn;
+    [SerializeField] Transform rightSpawn;
+    [SerializeField] int[] enemySpawnTimes;
+    bool isSpawned;
+    internal Transform targetSpawn;
 
     // Start is called before the first frame update
     void Start()
